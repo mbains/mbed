@@ -7,7 +7,9 @@
 
 #ifndef MFRC522_H
 #define	MFRC522_H
+#include <stdint.h>
 
+#define NULL (0)
 
 // Firmware data for self-test
 // Reference values based on firmware version

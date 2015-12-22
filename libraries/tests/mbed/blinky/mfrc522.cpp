@@ -1,4 +1,6 @@
 #include "mfrc522.h"
+#include <stdio.h>
+#include <string.h>
 
 static int digitalRead(int pin) {
     return 0;
@@ -1481,7 +1483,7 @@ void MFRC522::PICC_DumpMifareClassicSectorToSerial(Uid *uid,			///< Pointer to U
 		
 		if (group != 3 && (g[group] == 1 || g[group] == 6)) { // Not a sector trailer, a value block
 			uint32_t value = (uint32_t(buffer[3])<<24) | (uint32_t(buffer[2])<<16) | (uint32_t(buffer[1])<<8) | uint32_t(buffer[0]);
-			printf(" Value=0x"); printf("%u" ,value);
+			printf(" Value=0x"); printf("%x" ,(long)value);
 			printf(" Adr=0x"); printf("%x", buffer[12]);
 		}
 		printf("\n");
@@ -1744,7 +1746,7 @@ bool MFRC522::MIFARE_UnbrickUidSector(bool logErrors) {
 	if (status != STATUS_OK) {
 		if (logErrors) {
 			printf("MIFARE_Write() failed: ");
-			printf("%s\n", GetStatusCodeName(status);
+			printf("%s\n", GetStatusCodeName(status));
 		}
 		return false;
 	}
