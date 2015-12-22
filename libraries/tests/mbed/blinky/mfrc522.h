@@ -310,11 +310,11 @@ public:
 	MFRC522::StatusCode PCD_MIFARE_Transceive(uint8_t *sendData, uint8_t sendLen, bool acceptTimeout = false);
 	// old function used too much memory, now name moved to flash; if you need char, copy from flash to memory
 	//const char *GetStatusCodeName(uint8_t code);
-	const __FlashStringHelper *GetStatusCodeName(MFRC522::StatusCode code);
+	const char *GetStatusCodeName(MFRC522::StatusCode code);
 	MFRC522::PICC_Type PICC_GetType(uint8_t sak);
 	// old function used too much memory, now name moved to flash; if you need char, copy from flash to memory
 	//const char *PICC_GetTypeName(uint8_t type);
-	const __FlashStringHelper *PICC_GetTypeName(uint8_t type);
+	const char *PICC_GetTypeName(uint8_t type);
 	void PICC_DumpToSerial(Uid *uid);
 	void PICC_DumpMifareClassicToSerial(Uid *uid, uint8_t piccType, MIFARE_Key *key);
 	void PICC_DumpMifareClassicSectorToSerial(Uid *uid, MIFARE_Key *key, uint8_t sector);
