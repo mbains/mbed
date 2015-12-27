@@ -6,15 +6,18 @@
  */
 
 #include "hx711.h"
+#define LOW  (0)
+#define HIGH (1)
 
-HX711::HX711(int8_t dout, int8_t pd_sck, int8_t gain)
+/*
+ * TODO: see bitWrite Note
+ */
+HX711::HX711(PinName dout, PinName pd_sck, uint8_t gain)
+    :PD_SCK(pd_sck),
+     DOUT(dout)
+
 {
-    PD_SCK = pd_sck;
-    DOUT = dout;
-
-    //	pinMode(PD_SCK, OUTPUT);
-    //	pinMode(DOUT, INPUT);
-
+    
     set_gain(gain);
 }
 
@@ -25,11 +28,10 @@ HX711::~HX711()
 
 bool HX711::is_ready()
 {
-    return true;
-    //return digitalRead(DOUT) == LOW;
+    return  (DOUT == LOW);
 }
 
-void HX711::set_gain(int8_t gain)
+void HX711::set_gain(uint8_t gain)
 {
     switch (gain) {
         case 128: // channel A, gain factor 128
@@ -43,7 +45,7 @@ void HX711::set_gain(int8_t gain)
             break;
     }
 
-    //digitalWrite(PD_SCK, LOW);
+    PD_SCK = LOW;
     read();
 }
 
@@ -57,16 +59,17 @@ long HX711::read()
     // pulse the clock pin 24 times to read the data
     for (int8_t j = 3; j--;) {
         for (char i = 8; i--;) {
-            //			digitalWrite(PD_SCK, HIGH);
-            //			bitWrite(data[j], i, digitalRead(DOUT));
-            //			digitalWrite(PD_SCK, LOW);
+            			PD_SCK = HIGH;
+                        //TODO: This needs to represent bitWrite 
+            			data[j] |= (DOUT & (1<<i));
+            			PD_SCK = LOW;
         }
     }
 
     // set the channel and the gain factor for the next reading using the clock pin
     for (int i = 0; i < GAIN; i++) {
-        //		digitalWrite(PD_SCK, HIGH);
-        //		digitalWrite(PD_SCK, LOW);
+        		PD_SCK = HIGH;
+        		PD_SCK = LOW;
     }
 
     data[2] ^= 0x80;
@@ -111,8 +114,8 @@ void HX711::set_offset(long offset)
 
 void HX711::power_down()
 {
-    //	digitalWrite(PD_SCK, LOW);
-    //	digitalWrite(PD_SCK, HIGH);	
+    PD_SCK = LOW;
+    PD_SCK = HIGH;	
 }
 
 void HX711::power_up()
