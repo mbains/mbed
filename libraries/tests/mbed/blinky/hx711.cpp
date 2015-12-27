@@ -13,11 +13,11 @@
  * TODO: see bitWrite Note
  */
 HX711::HX711(PinName dout, PinName pd_sck, uint8_t gain)
-    :PD_SCK(pd_sck),
-     DOUT(dout)
+: PD_SCK(pd_sck),
+DOUT(dout)
 
 {
-    
+
     set_gain(gain);
 }
 
@@ -28,7 +28,7 @@ HX711::~HX711()
 
 bool HX711::is_ready()
 {
-    return  (DOUT == LOW);
+    return (DOUT == LOW);
 }
 
 void HX711::set_gain(uint8_t gain)
@@ -59,17 +59,17 @@ long HX711::read()
     // pulse the clock pin 24 times to read the data
     for (int8_t j = 3; j--;) {
         for (char i = 8; i--;) {
-            			PD_SCK = HIGH;
-                        //TODO: This needs to represent bitWrite 
-            			data[j] |= (DOUT & (1<<i));
-            			PD_SCK = LOW;
+            PD_SCK = HIGH;
+            //TODO: This needs to represent bitWrite 
+            data[j] |= (DOUT & (1 << i));
+            PD_SCK = LOW;
         }
     }
 
     // set the channel and the gain factor for the next reading using the clock pin
     for (int i = 0; i < GAIN; i++) {
-        		PD_SCK = HIGH;
-        		PD_SCK = LOW;
+        PD_SCK = HIGH;
+        PD_SCK = LOW;
     }
 
     data[2] ^= 0x80;
@@ -115,7 +115,7 @@ void HX711::set_offset(long offset)
 void HX711::power_down()
 {
     PD_SCK = LOW;
-    PD_SCK = HIGH;	
+    PD_SCK = HIGH;
 }
 
 void HX711::power_up()
