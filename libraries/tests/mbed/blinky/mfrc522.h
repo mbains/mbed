@@ -8,8 +8,8 @@
 #ifndef MFRC522_H
 #define	MFRC522_H
 #include <stdint.h>
+#include "mbed.h"
 
-#define NULL (0)
 
 // Firmware data for self-test
 // Reference values based on firmware version
@@ -250,8 +250,8 @@ public:
 	static const uint8_t FIFO_SIZE = 64;		// The FIFO is 64 uint8_ts.
 	
 	
-	MFRC522();
-	MFRC522(uint8_t chipSelectPin, uint8_t resetPowerDownPin);
+	//MFRC522();
+	MFRC522(PinName chipSelectPin, PinName resetPowerDownPin);
 	void setSPIConfig();
 	
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -333,9 +333,12 @@ public:
 	bool PICC_ReadCardSerial();
 	
 private:
-	uint8_t _chipSelectPin;		//  pin connected to MFRC522's SPI slave select input (Pin 24, NSS, active low)
-	uint8_t _resetPowerDownPin;	//  pin connected to MFRC522's reset and power down input (Pin 6, NRSTPD, active low)
+	DigitalOut _chipSelectPin;		//  pin connected to MFRC522's SPI slave select input (Pin 24, NSS, active low)
+	DigitalOut _resetPowerDownPin;	//  pin connected to MFRC522's reset and power down input (Pin 6, NRSTPD, active low)
 	MFRC522::StatusCode MIFARE_TwoStepHelper(uint8_t command, uint8_t blockAddr, long data);
+
+        SPI _spi;
+
 };
 
 

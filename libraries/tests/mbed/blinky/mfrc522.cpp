@@ -17,26 +17,21 @@ static void delay(int value) {
 
 #define LOW 0
 #define HIGH 1
-#define NULL 0
 
 typedef uint16_t word;
 
 
-/**
- * Constructor.
- */
-MFRC522::MFRC522() {
-} // End constructor
 
 /**
  * Constructor.
  * Prepares the output pins.
  */
-MFRC522::MFRC522(	uint8_t chipSelectPin,		///< Arduino pin connected to MFRC522's SPI slave select input (Pin 24, NSS, active low)
-					uint8_t resetPowerDownPin	///< Arduino pin connected to MFRC522's reset and power down input (Pin 6, NRSTPD, active low)
-				) {
-	_chipSelectPin = chipSelectPin;
-	_resetPowerDownPin = resetPowerDownPin;
+MFRC522::MFRC522(	PinName chipSelectPin,		///< Arduino pin connected to MFRC522's SPI slave select input (Pin 24, NSS, active low)
+					PinName resetPowerDownPin	///< Arduino pin connected to MFRC522's reset and power down input (Pin 6, NRSTPD, active low)
+				):_spi(SPI_MOSI, SPI_MISO, SPI_SCK),
+                  _chipSelectPin(chipSelectPin),
+                  _resetPowerDownPin(resetPowerDownPin)
+{
 } // End constructor
 
 /**
@@ -44,6 +39,9 @@ MFRC522::MFRC522(	uint8_t chipSelectPin,		///< Arduino pin connected to MFRC522'
  * Please call this function if you have changed the SPI config since the MFRC522 constructor was run.
  */
 void MFRC522::setSPIConfig() {
+    
+    _spi.frequency(1000000);
+    _spi.format(8,0);
 //	SPI.setBitOrder(MSBFIRST);
 //	SPI.setDataMode(SPI_MODE0);
 } // End setSPIConfig()
@@ -59,10 +57,10 @@ void MFRC522::setSPIConfig() {
 void MFRC522::PCD_WriteRegister(	uint8_t reg,		///< The register to write to. One of the PCD_Register enums.
 									uint8_t value		///< The value to write.
 								) {
-//	digitalWrite(_chipSelectPin, LOW);		// Select slave
-//	SPI.transfer(reg & 0x7E);				// MSB == 0 is for writing. LSB is not used in address. Datasheet section 8.1.2.3.
-//	SPI.transfer(value);
-//	digitalWrite(_chipSelectPin, HIGH);		// Release slave again
+    _chipSelectPin = LOW;		// Select slave
+	_spi.write(reg & 0x7E);				// MSB == 0 is for writing. LSB is not used in address. Datasheet section 8.1.2.3.
+    _spi.write(value);
+    _chipSelectPin = HIGH;		// Release slave again
 } // End PCD_WriteRegister()
 
 /**
@@ -73,12 +71,12 @@ void MFRC522::PCD_WriteRegister(	uint8_t reg,		///< The register to write to. On
 									uint8_t count,		///< The number of bytes to write to the register
 									uint8_t *values	///< The values to write. Byte array.
 								) {
-//	digitalWrite(_chipSelectPin, LOW);		// Select slave
-//	SPI.transfer(reg & 0x7E);				// MSB == 0 is for writing. LSB is not used in address. Datasheet section 8.1.2.3.
+    _chipSelectPin = LOW;		// Select slave
+    _spi.write(reg & 0x7E);				// MSB == 0 is for writing. LSB is not used in address. Datasheet section 8.1.2.3.
 	for (uint8_t index = 0; index < count; index++) {
-//		SPI.transfer(values[index]);
+		_spi.write(values[index]);
 	}
-//	digitalWrite(_chipSelectPin, HIGH);		// Release slave again
+    _chipSelectPin = HIGH;		// Release slave again
 } // End PCD_WriteRegister()
 
 /**
@@ -88,10 +86,10 @@ void MFRC522::PCD_WriteRegister(	uint8_t reg,		///< The register to write to. On
 uint8_t MFRC522::PCD_ReadRegister(	uint8_t reg	///< The register to read from. One of the PCD_Register enums.
 								) {
 	uint8_t value;
-//	digitalWrite(_chipSelectPin, LOW);			// Select slave
-//	SPI.transfer(0x80 | (reg & 0x7E));			// MSB == 1 is for reading. LSB is not used in address. Datasheet section 8.1.2.3.
-//	value = SPI.transfer(0);					// Read the value back. Send 0 to stop reading.
-//	digitalWrite(_chipSelectPin, HIGH);			// Release slave again
+	_chipSelectPin = LOW;			// Select slave
+	_spi.write(0x80 | (reg & 0x7E));			// MSB == 1 is for reading. LSB is not used in address. Datasheet section 8.1.2.3.
+    value = _spi.write(0);					// Read the value back. Send 0 to stop reading.
+    _chipSelectPin = HIGH;			// Release slave again
 	return value;
 } // End PCD_ReadRegister()
 
@@ -110,9 +108,9 @@ void MFRC522::PCD_ReadRegister(	uint8_t reg,		///< The register to read from. On
 	//Serial.print(F("Reading ")); 	Serial.print(count); Serial.println(F(" bytes from register."));
 	uint8_t address = 0x80 | (reg & 0x7E);		// MSB == 1 is for reading. LSB is not used in address. Datasheet section 8.1.2.3.
 	uint8_t index = 0;							// Index in values array.
-//	digitalWrite(_chipSelectPin, LOW);		// Select slave
+    _chipSelectPin = LOW;		// Select slave
 	count--;								// One read is performed outside of the loop
-//	SPI.transfer(address);					// Tell MFRC522 which address we want to read
+	_spi.write(address);					// Tell MFRC522 which address we want to read
 	while (index < count) {
 		if (index == 0 && rxAlign) {		// Only update bit positions rxAlign..7 in values[0]
 			// Create bit mask for bit positions rxAlign..7
@@ -123,17 +121,18 @@ void MFRC522::PCD_ReadRegister(	uint8_t reg,		///< The register to read from. On
 			// Read value and tell that we want to read the same address again.
 			
             uint8_t value = 0;//XXX
+            _spi.write(address);
                 //SPI.transfer(address);
 			// Apply mask to both current value of values[0] and the new data in value.
 			values[0] = (values[index] & ~mask) | (value & mask);
 		}
 		else { // Normal case
-			//values[index] = SPI.transfer(address);	// Read value and tell that we want to read the same address again.
+			values[index] = _spi.write(address);	// Read value and tell that we want to read the same address again.
 		}
 		index++;
 	}
-	//values[index] = SPI.transfer(0);			// Read the final byte. Send 0 to stop reading.
-	//digitalWrite(_chipSelectPin, HIGH);			// Release slave again
+	values[index] = _spi.write(0);			// Read the final byte. Send 0 to stop reading.
+	_chipSelectPin = HIGH;			// Release slave again
 } // End PCD_ReadRegister()
 
 /**
