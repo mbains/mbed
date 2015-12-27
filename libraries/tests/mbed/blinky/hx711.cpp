@@ -9,9 +9,7 @@
 #define LOW  (0)
 #define HIGH (1)
 
-/*
- * TODO: see bitWrite Note
- */
+
 HX711::HX711(PinName dout, PinName pd_sck, uint8_t gain)
 : PD_SCK(pd_sck),
 DOUT(dout)
@@ -54,14 +52,14 @@ long HX711::read()
     // wait for the chip to become ready
     while (!is_ready());
 
-    int8_t data[3];
+    uint8_t data[3];
+    memset(data, 0, 3);
 
     // pulse the clock pin 24 times to read the data
     for (int8_t j = 3; j--;) {
         for (char i = 8; i--;) {
             PD_SCK = HIGH;
-            //TODO: This needs to represent bitWrite 
-            data[j] |= (DOUT & (1 << i));
+            data[j] |= (DOUT << i);
             PD_SCK = LOW;
         }
     }
