@@ -2,17 +2,17 @@
 #include <stdio.h>
 #include <string.h>
 
-static int digitalRead(int pin) {
-    return 0;
-}
-
-static void digitalWrite(int pin, int value) {
-    (void)pin;
-    (void)value;
-}
+//static int digitalRead(int pin) {
+//    return 0;
+//}
+//
+//static void digitalWrite(int pin, int value) {
+//    (void)pin;
+//    (void)value;
+//}
 
 static void delay(int value) {
-    (void)value;
+    wait(value);
 }
 
 #define LOW 0
@@ -212,8 +212,8 @@ void MFRC522::PCD_Init() {
 	// Set SPI bus to work with MFRC522 chip.
 	setSPIConfig();
 	
-	if (digitalRead(_resetPowerDownPin) == LOW) {	//The MFRC522 chip is in power down mode.
-		digitalWrite(_resetPowerDownPin, HIGH);		// Exit power down mode. This triggers a hard reset.
+	if (_resetPowerDownPin == LOW) {	//The MFRC522 chip is in power down mode.
+		_resetPowerDownPin = HIGH;		// Exit power down mode. This triggers a hard reset.
 		// Section 8.8.2 in the datasheet says the oscillator start-up time is the start up time of the crystal + 37,74�s. Let us be generous: 50ms.
 		delay(50);
 	}
@@ -1264,10 +1264,10 @@ void MFRC522::PICC_DumpToSerial(Uid *uid	///< Pointer to Uid struct returned fro
 		printf("%x", uid->uidByte[i]);
 	} 
 	
-    printf("\n");
+    printf("\r\n");
 	// PICC type
 	uint8_t piccType = PICC_GetType(uid->sak);
-	printf("PICC type: %s\n", PICC_GetTypeName(piccType));
+	printf("PICC type: %s\r\n", PICC_GetTypeName(piccType));
 	
 	// Dump contents
 	switch (piccType) {
@@ -1298,7 +1298,7 @@ void MFRC522::PICC_DumpToSerial(Uid *uid	///< Pointer to Uid struct returned fro
 			break; // No memory dump here
 	}
 	
-	printf("\n");
+	printf("\r\n");
 	PICC_HaltA(); // Already done if it was a MIFARE Classic PICC.
 } // End PICC_DumpToSerial()
 
@@ -1485,7 +1485,7 @@ void MFRC522::PICC_DumpMifareClassicSectorToSerial(Uid *uid,			///< Pointer to U
 			printf(" Value=0x"); printf("%x" ,(long)value);
 			printf(" Adr=0x"); printf("%x", buffer[12]);
 		}
-		printf("\n");
+		printf("\r\n");
 	}
 	
 	return;
@@ -1528,7 +1528,7 @@ void MFRC522::PICC_DumpMifareUltralightToSerial() {
 					printf(" ");
 				printf("%u", buffer[i]);
 			}
-			printf("\n");
+			printf("\r\n");
 		}
 	}
 } // End PICC_DumpMifareUltralightToSerial()
@@ -1582,7 +1582,7 @@ bool MFRC522::MIFARE_OpenUidBackdoor(bool logErrors) {
 	MFRC522::StatusCode status = PCD_TransceiveData(&cmd, (uint8_t)1, response, &received, &validBits, (uint8_t)0, false); // 40
 	if(status != STATUS_OK) {
 		if(logErrors) {
-			printf("Card did not respond to 0x40 after HALT command. Are you sure it is a UID changeable one?\n");
+			printf("Card did not respond to 0x40 after HALT command. Are you sure it is a UID changeable one?\r\n");
 			printf("Error name: ");
 			printf("%s\n", GetStatusCodeName(status));
 		}
@@ -1657,7 +1657,7 @@ bool MFRC522::MIFARE_SetUid(uint8_t *newUid, uint8_t uidSize, bool logErrors) {
 //			  PICC_WakeupA(atqa_answer, &atqa_size);
 			
 			if (!PICC_IsNewCardPresent() || !PICC_ReadCardSerial()) {
-				printf("No card was previously selected, and none are available. Failed to set UID.\n");
+				printf("No card was previously selected, and none are available. Failed to set UID.\r\n");
 				return false;
 			}
 			
@@ -1665,7 +1665,7 @@ bool MFRC522::MIFARE_SetUid(uint8_t *newUid, uint8_t uidSize, bool logErrors) {
 			if (status != STATUS_OK) {
 				// We tried, time to give up
 				if (logErrors) {
-					printf("Failed to authenticate to card for reading, could not set UID: \n");
+					printf("Failed to authenticate to card for reading, could not set UID: \r\n");
 					printf("%s\n", GetStatusCodeName(status));
 				}
 				return false;
@@ -1688,7 +1688,7 @@ bool MFRC522::MIFARE_SetUid(uint8_t *newUid, uint8_t uidSize, bool logErrors) {
 		if (logErrors) {
 			printf("MIFARE_Read() failed: ");
 			printf("%s\n", GetStatusCodeName(status));
-			printf("Are you sure your KEY A for sector 0 is 0xFFFFFFFFFFFF?\n");
+			printf("Are you sure your KEY A for sector 0 is 0xFFFFFFFFFFFF?\r\n");
 		}
 		return false;
 	}
@@ -1709,7 +1709,7 @@ bool MFRC522::MIFARE_SetUid(uint8_t *newUid, uint8_t uidSize, bool logErrors) {
 	// Activate UID backdoor
 	if (!MIFARE_OpenUidBackdoor(logErrors)) {
 		if (logErrors) {
-			printf("Activating the UID backdoor failed.\n");
+			printf("Activating the UID backdoor failed.\r\n");
 		}
 		return false;
 	}
