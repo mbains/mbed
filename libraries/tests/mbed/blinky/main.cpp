@@ -171,9 +171,7 @@ void read_rfid() {
     }
 }
 
-int main()
-{
-
+int can_test() {
     __CAN_CLK_ENABLE();
     __CAN1_CLK_DISABLE();
     __CAN1_CLK_ENABLE();
@@ -195,4 +193,9 @@ int main()
     while(1) {
         send_message();
     }
+}
+int main()
+{
+
+    read_rfid();
 }
