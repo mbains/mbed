@@ -1500,7 +1500,7 @@ void MFRC522::PICC_DumpMifareUltralightToSerial() {
 	uint8_t buffer[18];
 	uint8_t i;
 	
-	printf("Page  0  1  2  3");
+	printf("Page  0  1  2  3\r\n");
 	// Try the mpages of the original Ultralight. Ultralight C has more pages.
 	for (uint8_t page = 0; page < 16; page +=4) { // Read returns data for 4 pages at a time.
 		// Read pages
