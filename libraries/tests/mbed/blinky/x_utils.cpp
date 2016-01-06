@@ -14,14 +14,18 @@ void float_to_str(float val, char * buf) {
     sprintf (buf, "%d.%04d%04d", d1, d2, d3);
 }
 
+/*
+ * convert double to string buf. 
+ * @buf nominally a 30 byte wide buffer
+ */
 void double_to_str(double val, char * buf) {
-    int d1 = val;            // Get the integer part (678).
+    long d1 = val;            // Get the integer part (678).
     float f2 = val - d1;     // Get fractional part (0.01234567).
     int d2 = trunc(f2 * 10000);   // Turn into integer (123).
     float f3 = f2 * 10000 - d2;   // Get next fractional part (0.4567).
     int d3 = trunc(f3 * 10000);   // Turn into integer (4567).
     
-    sprintf (buf, "%d.%04d%04d", d1, d2, d3);
+    sprintf (buf, "%ld.%04d%04d", d1, d2, d3);
 }
 
 void test_float_to_str() {
