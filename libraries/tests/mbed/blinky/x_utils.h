@@ -9,6 +9,7 @@
 #define	UTILS_H
 
 void float_to_str(float val, char * buf);
+void double_to_str(double val, char * buf);
 
 #endif	/* UTILS_H */
 

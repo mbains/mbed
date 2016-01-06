@@ -47,7 +47,7 @@ void HX711::set_gain(uint8_t gain)
     read();
 }
 
-long HX711::read()
+int HX711::read()
 {
     // wait for the chip to become ready
     while (!is_ready());
@@ -75,13 +75,14 @@ long HX711::read()
     return ((uint32_t) data[2] << 16) | ((uint32_t) data[1] << 8) | (uint32_t) data[0];
 }
 
-long HX711::read_average(int8_t times)
+double HX711::read_average(int8_t times)
 {
-    long sum = 0;
+    int sum = 0;
     for (int8_t i = 0; i < times; i++) {
         sum += read();
     }
-    return sum / times;
+    sum = sum/1000.;
+    return sum / (double)times;
 }
 
 double HX711::get_value(int8_t times)
@@ -89,7 +90,7 @@ double HX711::get_value(int8_t times)
     return read_average(times) - OFFSET;
 }
 
-float HX711::get_units(int8_t times)
+double HX711::get_units(int8_t times)
 {
     return get_value(times) / SCALE;
 }
@@ -100,12 +101,12 @@ void HX711::tare(int8_t times)
     set_offset(sum);
 }
 
-void HX711::set_scale(float scale)
+void HX711::set_scale(double scale)
 {
     SCALE = scale;
 }
 
-void HX711::set_offset(long offset)
+void HX711::set_offset(int offset)
 {
     OFFSET = offset;
 }

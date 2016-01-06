@@ -16,8 +16,8 @@ private:
     DigitalOut PD_SCK; // Power Down and Serial Clock Input Pin
     DigitalIn DOUT; // Serial Data Output Pin
     uint8_t GAIN; // amplification factor
-    long OFFSET; // used for tare weight
-    float SCALE; // used to return weight in grams, kg, ounces, whatever
+    int OFFSET; // used for tare weight
+    double SCALE; // used to return weight in grams, kg, ounces, whatever
 
 public:
     // define clock and data pin, channel, and gain factor
@@ -38,26 +38,26 @@ public:
     void set_gain(uint8_t gain = 128);
 
     // waits for the chip to be ready and returns a reading
-    long read();
+    int read();
 
     // returns an average reading; times = how many times to read
-    long read_average(int8_t times = 10);
+    double read_average(int8_t times = 10);
 
     // returns (read_average() - OFFSET), that is the current value without the tare weight; times = how many readings to do
     double get_value(int8_t times = 1);
 
     // returns get_value() divided by SCALE, that is the raw value divided by a value obtained via calibration
     // times = how many readings to do
-    float get_units(int8_t times = 1);
+    double get_units(int8_t times = 1);
 
     // set the OFFSET value for tare weight; times = how many times to read the tare value
     void tare(int8_t times = 10);
 
     // set the SCALE value; this value is used to convert the raw data to "human readable" data (measure units)
-    void set_scale(float scale = 1.f);
+    void set_scale(double scale = 1.f);
 
     // set OFFSET, the value that's subtracted from the actual reading (tare weight)
-    void set_offset(long offset = 0);
+    void set_offset(int offset = 0);
 
     // puts the chip into power down mode
     void power_down();

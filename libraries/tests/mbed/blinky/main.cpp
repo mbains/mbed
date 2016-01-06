@@ -194,8 +194,24 @@ int can_test() {
         send_message();
     }
 }
+
+void read_hx711() {
+    HX711 load_cell(D4, D3);
+    char print_buf[20];
+    printf("Taring in 3 seconds...");
+    wait(3);
+    printf("Now\r\n");
+    //load_cell.tare(25);
+    while(1) {
+        wait(0.1);
+        //double_to_str(load_cell.read_average(2), print_buf);
+        //printf("raw value = %s\r\n", print_buf);
+        printf("raw value = %d\r\n", load_cell.read());
+    }
+}
+
 int main()
 {
-
-    read_rfid();
+    
+    read_hx711();
 }
