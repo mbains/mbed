@@ -77,11 +77,10 @@ int HX711::read()
 
 double HX711::read_average(int8_t times)
 {
-    int sum = 0;
+    long sum = 0;
     for (int8_t i = 0; i < times; i++) {
         sum += read();
     }
-    sum = sum/1000.;
     return sum / (double)times;
 }
 

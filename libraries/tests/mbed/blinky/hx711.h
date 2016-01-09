@@ -16,7 +16,7 @@ private:
     DigitalOut PD_SCK; // Power Down and Serial Clock Input Pin
     DigitalIn DOUT; // Serial Data Output Pin
     uint8_t GAIN; // amplification factor
-    int OFFSET; // used for tare weight
+    double OFFSET; // used for tare weight
     double SCALE; // used to return weight in grams, kg, ounces, whatever
 
 public:

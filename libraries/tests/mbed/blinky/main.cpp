@@ -201,10 +201,10 @@ void read_hx711(Serial &device) {
     device.printf("Taring in 3 seconds...");
     wait(3);
     device.printf("Now\r\n");
-    //load_cell.tare(25);
+    load_cell.tare(10);
     while(1) {
         wait(0.1);
-        double_to_str(load_cell.read_average(2), print_buf);
+        double_to_str(load_cell.get_value(5), print_buf);
         device.printf("raw value = %s\r\n", print_buf);
         //device.printf("raw value = %d\r\n", load_cell.read());
     }
