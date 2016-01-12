@@ -7,12 +7,33 @@
 
 #include "Modbus.h"
 
-Modbus::Modbus()
-{
+int Modbus::init(uint8_t id, Serial * device) {
+
+    m_id = id;
+    m_device = device;
+    return 0;
+};
+
+uint8_t Modbus::poll() {
+    m_device->readable();
+    
+    //XXX: Missing timeout code
+    
+    if(!m_device->readable()) {
+        return 0;
+    }
+    
+//    if
 }
 
-Modbus::Modbus(const Modbus& orig)
-{
+int8_t Modbus::getRxBuffer() {
+    
+    bool overflow = false;
+    
+    
+    while(m_device->readable()) {
+        
+    }
 }
 
 Modbus::~Modbus()
