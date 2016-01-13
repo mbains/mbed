@@ -291,6 +291,13 @@ TESTS = [
         "automated": False,
     },
     {
+        "id": "MBED_SULARE", "description": "sulare",
+        "source_dir": join(TEST_DIR, "mbed", "sulare"),
+        "dependencies": [MBED_LIBRARIES, TEST_MBED_LIB],
+        "automated": False,
+    },
+ 
+    {
         "id": "MBED_BUS", "description": "Blinky BUS",
         "source_dir": join(TEST_DIR, "mbed", "bus"),
         "dependencies": [MBED_LIBRARIES, TEST_MBED_LIB],
